@@ -1,19 +1,2 @@
-938 - 958 	 len: 20 	 positive count:0 	 negative count:0 	 content:TTTTAAGGCAGATGTGGAGT
-939 - 959 	 len: 20 	 positive count:0 	 negative count:0 	 content:GTTTTAAGGCAGATGTGGAG
-940 - 960 	 len: 20 	 positive count:0 	 negative count:0 	 content:GGTTTTAAGGCAGATGTGGA
-941 - 961 	 len: 20 	 positive count:0 	 negative count:0 	 content:TGGTTTTAAGGCAGATGTGG
-942 - 962 	 len: 20 	 positive count:0 	 negative count:0 	 content:TTGGTTTTAAGGCAGATGTG
-944 - 964 	 len: 20 	 positive count:0 	 negative count:0 	 content:CTTTGGTTTTAAGGCAGATG
-946 - 966 	 len: 20 	 positive count:0 	 negative count:0 	 content:CTCTTTGGTTTTAAGGCAGA
-947 - 967 	 len: 20 	 positive count:0 	 negative count:0 	 content:CCTCTTTGGTTTTAAGGCAG
-948 - 968 	 len: 20 	 positive count:1 	 negative count:0 	 content:CCCTCTTTGGTTTTAAGGCA
-949 - 969 	 len: 20 	 positive count:1 	 negative count:0 	 content:GCCCTCTTTGGTTTTAAGGC
-950 - 970 	 len: 20 	 positive count:1 	 negative count:0 	 content:AGCCCTCTTTGGTTTTAAGG
-951 - 971 	 len: 20 	 positive count:1 	 negative count:0 	 content:AAGCCCTCTTTGGTTTTAAG
-952 - 972 	 len: 20 	 positive count:1 	 negative count:0 	 content:GAAGCCCTCTTTGGTTTTAA
-953 - 973 	 len: 20 	 positive count:1 	 negative count:0 	 content:GGAAGCCCTCTTTGGTTTTA
-1203 - 1223 	 len: 20 	 positive count:1 	 negative count:0 	 content:CTCAGCCAGGTGTAGTGGAA
-1204 - 1224 	 len: 20 	 positive count:1 	 negative count:0 	 content:CCTCAGCCAGGTGTAGTGGA
-1205 - 1225 	 len: 20 	 positive count:1 	 negative count:0 	 content:ACCTCAGCCAGGTGTAGTGG
-
-Total number: 17
+758-778,759-779,760-780,761-781,762-782,763-783,850-870,851-871,852-872,853-873,854-874,855-875,856-876,857-877,858-878,859-879,860-880,861-881,862-882,863-883,864-884,865-885,866-886,867-887,937-957,938-958,939-959,940-960,941-961,942-962,943-963,944-964,945-965,946-966,947-967,948-968,949-969,950-970,951-971,952-972,953-973,954-974,1203-1223,1204-1224,1205-1225,1206-1226,1489-1509,1490-1510,1491-1511,1492-1512,1493-1513,1494-1514,1495-1515,1496-1516,1497-1517,1498-1518,1499-1519,1500-1520,1501-1521,1502-1522,1613-1633,1614-1634,1615-1635,1616-1636,
+Total number: 64

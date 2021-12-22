@@ -12,8 +12,8 @@ class Seq:
         self.len = len(sequence)
         ############################
         # Configuration
-        self.open_threshold = 0.7
-        self.open_len_threshold = 9
+        self.open_threshold = 0.6
+        self.open_len_threshold = 8
         # ratio of 'open' nucleotide should between [lower_bound,upper_bound]
         self.upper_bound = 1.0
         self.lower_bound = 0.3
@@ -120,19 +120,21 @@ def calc(seq: Seq, output_path):
                 continue
             if((j-i) < seq.min_window):
                 continue
-            if(calcGC(seq, i, j) == False):
-                continue
+            # if(calcGC(seq, i, j) == False):
+            #     continue
             fb, posi, nega = calc_special_subseq(seq, i, j)
             if(fb > 0):
                 continue
             if((i//seq.resolution, j//seq.resolution) not in ans_set):
                 ans_set.add((i//seq.resolution, j//seq.resolution))
+                '''
                 output_str = '{} - {} \t len: {} \t positive count:{} \t negative count:{} \t content:{}'.format(
                     i+1, j+1, (j-i), posi, nega, seq.get_sub_str(i, j))
                 print(output_str)
+                '''
                 # i+1 because array index starts from 0
-                fp.write(output_str)
-                fp.write('\n')
+                fp.write('{}-{},'.format(i+1, j+1))
+                # fp.write('\n')
         pass
     print("Total number:")
     print(len(ans_set))
