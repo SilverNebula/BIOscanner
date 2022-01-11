@@ -7,13 +7,14 @@ import argparse
 class Seq:
     def __init__(self, sequence, pred):
         self.sequence = sequence
+        self.str = ''.join(sequence)
         self.base = np.array(self.sequence, dtype=np.str)
         self.value = np.array(pred)
         self.len = len(sequence)
         ############################
         # Configuration
-        self.open_threshold = 0.6
-        self.open_len_threshold = 8
+        self.open_threshold = 0.57
+        self.open_len_threshold = 10
         # ratio of 'open' nucleotide should between [lower_bound,upper_bound]
         self.upper_bound = 1.0
         self.lower_bound = 0.3
@@ -72,27 +73,26 @@ class Seq:
             res = max(res, len)
         return res
 
-
-def calcGC(seq: Seq, st, ed):
-    # examine G+C ratio and Tm
-    threshold2 = seq.CG_windowsize * seq.CG_upperbound
-    threshold1 = seq.CG_windowsize * seq.CG_lowerbound
-    cnt = 0
-    for i in range(st, ed):
-        # count the element that moves into window
-        cnt += (seq.base[i] == 'C') + (seq.base[i] == 'G')
-        # count the element that just move out of window
-        if(i-seq.CG_windowsize >= st):
-            cnt -= (seq.base[i-seq.CG_windowsize] == 'C') + \
-                (seq.base[i-seq.CG_windowsize] == 'G')
-        #
-        if(i-seq.CG_windowsize+1 >= st):  # a window
-            if((cnt < threshold1) or (cnt > threshold2)):
-                return False
-            Tm = 4 * cnt + 2 * (seq.CG_windowsize - cnt)
-            if(Tm < seq.Tm_threshold):
-                return False
-    return True
+    def calcGC(self, st, ed):
+        # examine G+C ratio and Tm
+        threshold2 = seq.CG_windowsize * seq.CG_upperbound
+        threshold1 = seq.CG_windowsize * seq.CG_lowerbound
+        cnt = 0
+        for i in range(st, ed):
+            # count the element that moves into window
+            cnt += (seq.base[i] == 'C') + (seq.base[i] == 'G')
+            # count the element that just move out of window
+            if(i-seq.CG_windowsize >= st):
+                cnt -= (seq.base[i-seq.CG_windowsize] == 'C') + \
+                    (seq.base[i-seq.CG_windowsize] == 'G')
+            #
+            if(i-seq.CG_windowsize+1 >= st):  # a window
+                if((cnt < threshold1) or (cnt > threshold2)):
+                    return False
+                Tm = 4 * cnt + 2 * (seq.CG_windowsize - cnt)
+                if(Tm < seq.Tm_threshold):
+                    return False
+        return True
 
 
 def calc_special_subseq(seq: Seq, st, ed):
@@ -101,6 +101,28 @@ def calc_special_subseq(seq: Seq, st, ed):
     positive = seq.positive_index.query(query_str)
     negative = seq.negative_index.query(query_str)
     return len(forbidden), len(positive), len(negative)
+
+
+def calc_max_threshold(seq: Seq, len):
+    a, b = input().split()
+    a = int(a) - 1
+    b = int(b) - 1
+    while(a and b):
+        mini = 0
+        backup = seq.open_threshold
+        for i in range(a, b):
+            base = seq.value[i]
+            seq.open_threshold = base
+            tmp_len = seq.calc_contiguous_opening_len(a, b)
+            if tmp_len >= len:
+                mini = max(mini, base)
+            # print('{}:{}'.format(i, base))
+        print('required contiguous length:{}  interval:{}-{}  max threshold:{}'.format(len, a, b, mini))
+        seq.open_threshold = backup
+        a, b = input().split()
+        a = int(a)-1
+        b = int(b)-1
+    pass
 
 
 def calc(seq: Seq, output_path):
@@ -120,11 +142,11 @@ def calc(seq: Seq, output_path):
                 continue
             if((j-i) < seq.min_window):
                 continue
-            # if(calcGC(seq, i, j) == False):
+            # if(seq.calcGC(i, j) == False):
             #     continue
-            fb, posi, nega = calc_special_subseq(seq, i, j)
-            if(fb > 0):
-                continue
+            # fb, posi, nega = calc_special_subseq(seq, i, j)
+            # if(fb > 0):
+            #     continue
             if((i//seq.resolution, j//seq.resolution) not in ans_set):
                 ans_set.add((i//seq.resolution, j//seq.resolution))
                 '''
@@ -140,6 +162,19 @@ def calc(seq: Seq, output_path):
     print(len(ans_set))
     fp.write("\nTotal number: {}\n".format(len(ans_set)))
     pass
+
+
+def get_ASO(seq):
+    char_map = {'A': 'T',
+                'G': 'C',
+                'C': 'G',
+                'U': 'A',
+                'T': 'A'}
+    res = list(seq)[::-1]
+    for i in range(len(res)):
+        res[i] = char_map[res[i]]
+    res = ''.join(res)
+    return res
 
 
 if __name__ == '__main__':
@@ -166,3 +201,4 @@ if __name__ == '__main__':
             sequence.append(char_map[sp[2]])
         seq = Seq(sequence, value)
     calc(seq, output_file)
+    # calc_max_threshold(seq, 10)

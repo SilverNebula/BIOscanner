@@ -6,6 +6,7 @@ import pyhgvs as hgvs
 from pyhgvs.utils import read_transcripts
 from pyfaidx import Fasta
 
+
 class parseHGVS():
     def __init__(self):
         # Read genome sequence using pyfaidx.
@@ -29,11 +30,9 @@ class parseHGVS():
         return chrom, offset, ref, alt
 
 
-def task1(dic:dict):
+def task1(dic: dict):
     gatk_result = "D:/CODE/BIO/gene_compare/ninghaiguang_FKDO210387142-1A_HMHW2DSX2_L4.hg38_multianno.vcf"
     vcf_reader = vcf.Reader(filename=gatk_result)
-    # df = pd.DataFrame()
-    # df.columns = ['chr', 'pos', 'id', 'ref', 'alt', 'gene_detail', 'aa_change']
     for record in vcf_reader:
         # CHROM, POS, ID, REF, ALT
         chrom = record.CHROM
@@ -43,12 +42,12 @@ def task1(dic:dict):
         alt = record.ALT
         gene_detail = record.INFO['GeneDetail.refGene']
         aa_change = record.INFO['AAChange.refGene']
-        res = (chrom,pos,ref,str(alt[0]))
+        res = (chrom, pos, ref, str(alt[0]))
         # print(res)
         res = dic.get(res)
         if(res):
             print(res)
-        
+
     '''
     fout = open('result.txt', 'w')
     for name in st:
@@ -57,9 +56,10 @@ def task1(dic:dict):
     fout.close()
     '''
 
+
 def task2(gatk_result):
     vcf_reader = vcf.Reader(filename=gatk_result)
-    df = pd.DataFrame(columns = ['chr', 'pos', 'hgvs' , 'dn' , 'sg'])
+    df = pd.DataFrame(columns=['chr', 'pos', 'hgvs', 'dn', 'sg'])
     for record in vcf_reader:
         # CHROM, POS, ID, REF, ALT
         chrom = record.CHROM
@@ -76,10 +76,11 @@ def task2(gatk_result):
         clndn = record.INFO.get('CLNDN')
         clnsg = record.INFO.get('CLNSIG')
         if(clndn and ('Retinitis' in str(clndn))):
-            df.loc[len(df)] = [chrom,pos,str(clnhgvs),clndn,clnsg]
+            df.loc[len(df)] = [chrom, pos, str(clnhgvs), clndn, clnsg]
             print('1')
             # output = '{} {}  HGVS:{} {} {}'.format(chrom,pos,clnhgvs,clndn,clnsg)
     return df
+
 
 if __name__ == '__main__':
     # clinvar_result = 'D:/CODE/BIO/gene_compare/clinvar_result.txt'
@@ -120,10 +121,10 @@ if __name__ == '__main__':
     df1.to_csv('csv1.csv')
     df2.to_csv('csv2.csv')
     '''
-    df1 = pd.read_csv('csv1.csv')
-    df2 = pd.read_csv('csv2.csv')
+    df1 = pd.read_csv('D:/CODE/BIO/dataset/gene_compare_20211220/csv1.csv')
+    df2 = pd.read_csv('D:/CODE/BIO/dataset/gene_compare_20211220/csv2.csv')
     df1 = df1[df1['hgvs'].isin(df2['hgvs'])]
-    df1.to_csv('csv_res.csv')
+    df1.to_csv('D:/CODE/BIO/dataset/gene_compare_20211220/csv_res.csv')
     # print(df2.head())
     # print(df1)
     # fout = open('clin_res.txt', 'w')

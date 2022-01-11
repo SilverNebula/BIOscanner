@@ -1,0 +1,3 @@
+[submodule "src/lib/hgvs"]
+	path = src/lib/hgvs
+	url = https://github.com/counsyl/hgvs.git
