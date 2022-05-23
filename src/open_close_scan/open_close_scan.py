@@ -142,9 +142,10 @@ def calc(seq: Seq, output_path):
                 continue
             if((j-i) < seq.min_window):
                 continue
-            # if(seq.calcGC(i, j) == False):
+            # uncomment if need: 
+            # if(seq.calcGC(i, j) == False): # check GC-ratio
             #     continue
-            # fb, posi, nega = calc_special_subseq(seq, i, j)
+            # fb, posi, nega = calc_special_subseq(seq, i, j) # check special subsequence
             # if(fb > 0):
             #     continue
             if((i//seq.resolution, j//seq.resolution) not in ans_set):
@@ -181,14 +182,15 @@ if __name__ == '__main__':
     char_map = {'A': 'T',
                 'G': 'C',
                 'C': 'G',
-                'U': 'A'}
+                'U': 'A',
+                'T': 'A'}
 
     print('start')
     seq = None
     #
     sscount_file = './sscount.txt'
     output_file = './out.txt'
-    #
+    # Read sscount file
     with open(sscount_file, 'r') as fp:
         cnt = fp.readline()
         data = fp.readlines()
@@ -200,5 +202,5 @@ if __name__ == '__main__':
             value.append(int(sp[1])/int(cnt))
             sequence.append(char_map[sp[2]])
         seq = Seq(sequence, value)
+    # calculate and output
     calc(seq, output_file)
-    # calc_max_threshold(seq, 10)

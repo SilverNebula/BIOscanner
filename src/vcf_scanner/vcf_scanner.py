@@ -1,4 +1,5 @@
 import re
+import numpy
 from pandas.core.series import Series
 import vcf
 import pandas as pd
@@ -83,7 +84,113 @@ def task2(gatk_result):
     return df
 
 
+def find_splice_variant(vcf_db):
+    vcf_reader = vcf.Reader(filename=vcf_db,encoding='utf8')
+    fout = open('result_false.vcf','w')
+    vcf_writer = vcf.Writer(fout,vcf_reader)
+    output =[]
+    for record in vcf_reader:
+        # CHROM, POS, ID, REF, ALT
+        chrom = record.CHROM
+        pos = record.POS
+        id = record.ID
+        ref = record.REF
+        if len(ref)!=1:
+            continue
+        alt = record.ALT
+        if (alt[0] is None) or (len(alt[0]))!=1:
+            continue
+        gene_detail = record.INFO.get('GENEINFO')
+        clnhgvs = record.INFO.get('CLNHGVS')
+        clndn = record.INFO.get('CLNDN')
+        clnsg = record.INFO.get('CLNSIG')
+        if clnsg and (clnsg[0] not in 'Pathogenic'):
+            continue
+        vtype = record.INFO.get('MC')
+        if vtype is None:
+            continue
+        record.INFO = {}
+        record.add_info('CLNSIG',clnsg)
+        record.add_info('CLNDN',clndn)
+        record.add_info('MC',vtype)
+        record.add_info('CLNHGVS',clnhgvs)
+        ### change filter here
+        if (('splice' not in vtype[0]) and (('missense_variant' in vtype[0])or('synonymous_variant' in vtype[0]))):
+            output.append(record)
+        ###
+    idx = numpy.random.permutation(len(output)).tolist()
+    for i in range(8000):
+        vcf_writer.write_record(output[idx[i]])
+    vcf_writer.close()
+    
+
+def match_splice_variant(vcf_db):
+    vcf_reader = vcf.Reader(filename=vcf_db,encoding='utf8')
+    fout = open('result_false_filtered','w')
+    hgvs_dic = {}
+    for record in vcf_reader:
+        # CHROM, POS, ID, REF, ALT
+        chrom = record.CHROM
+        pos = record.POS
+        id = record.ID
+        clnhgvs = record.INFO.get('CLNHGVS')
+        hgvs_dic[(chrom,pos,id)] = clnhgvs
+    vcf_reader = vcf.Reader(filename='result_false.vcf',encoding='utf8')
+    vcf_writer = vcf.Writer(fout,vcf_reader)
+    output =[]
+    for record in vcf_reader:
+        # CHROM, POS, ID, REF, ALT
+        chrom = record.CHROM
+        pos = record.POS
+        id = record.ID
+        ref = record.REF
+        hgvs = hgvs_dic.get((chrom,pos,id))
+        if hgvs is None:
+            continue
+        if len(ref)!=1:
+            continue
+        alt = record.ALT
+        if (alt[0] is None) or (len(alt[0]))!=1:
+            continue
+        gene_detail = record.INFO.get('GENEINFO')
+        clndn = record.INFO.get('CLNDN')
+        clnsg = record.INFO.get('CLNSIG')
+        vtype = record.INFO.get('MC')
+        record.INFO = {}
+        record.add_info('CLNSIG',clnsg)
+        record.add_info('CLNDN',clndn)
+        record.add_info('MC',vtype)
+        record.add_info('CLNHGVS',hgvs)
+        ### change filter here
+        output.append(record)
+        ###
+    idx = numpy.random.permutation(len(output)).tolist()
+    for i in range(len(output)):
+        vcf_writer.write_record(output[idx[i]])
+    vcf_writer.close()
+    pass
+
+def calc_predication(result_vcf):
+    vcf_reader = vcf.Reader(filename=result_vcf,encoding='utf8')
+    for record in vcf_reader:
+        # CHROM, POS, ID, REF, ALT
+        chrom = record.CHROM
+        pos = record.POS
+        id = record.ID
+        ref = record.REF
+        alt = record.ALT
+        score = ''
+        for k in record.INFO.keys():
+            if record.INFO[k] == True:
+                score = k
+                break
+                # print(k)
+        score = score.split(sep='|')[2:6]
+        score = [float(x) for x in score]
+        print(score)
+
 if __name__ == '__main__':
+    '''
     parser = argparse.ArgumentParser(description="training setting")
     parser.add_argument('targetfile',type=str,help='target .vcf file')
     args = parser.parse_args()
@@ -92,3 +199,8 @@ if __name__ == '__main__':
     df2 = task2(gatk_result2)
     print(df2.head())
     df2.to_csv('csv2.csv')
+    '''
+    path = r'D:\CODE\BIO\dataset\clinvar_dataset_2022\grch37\clinvar_20220507.vcf'
+    match_splice_variant(path)
+    # path2 = 'splice_result.vcf'
+    # calc_predication(path2)
